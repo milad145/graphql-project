@@ -3,45 +3,54 @@ import {createHandler} from 'graphql-http/lib/use/express';
 import {buildSchema} from 'graphql'
 
 import {ruruHTML} from 'ruru/server';
+import mongoose from "mongoose";
+import {findArticles, getArticle} from "./libs/services/article.js";
 
+const initiateExpress = () => {
 
-const schema = buildSchema(`
+    const schema = buildSchema(`
     type Query {
-        name: String
-        age: Int
-        catArray: [Category]
-        catObj: Category
+        articles: [Article]
+        article: Article
     }
     
-    type Category {
-        name: String
-        type: String
-        isMale: Boolean
+    type Article {
+        body: String
+        title: String
     }
 `)
 
-const rootValue = {
-    name: () => 'milad',
-    age: () => 33,
-    catArray: () => {
-        return [{name: 'test', type: 'bplus', isMale: true}, {name: 'test2', type: 'aplus'}]
-    },
-    catObj: () => {
-        return {name: 'test', type: 'bplus', isMale: false}
+    const rootValue = {
+        articles: () => findArticles(),
+        article: () => getArticle("5c46c0d169720e4bc0d05cde")
     }
+
+    const app = express();
+
+    app.all("/milad", createHandler({
+        schema,
+        rootValue
+    }))
+
+    app.get('/', (_req, res) => {
+        res.type('html');
+        res.end(ruruHTML({endpoint: '/milad'}));
+    });
+
+    app.listen(4000, () => console.log("Running on port 4000"));
+
 }
 
-const app = express();
+const connectDB = async () => {
+    try {
+        const conn = await mongoose.connect("mongodb://0.0.0.0:27017/graphql");
 
-app.all("/milad", createHandler({
-    schema,
-    rootValue
-}))
+        console.log(`MongoDB Connected: ${conn.connection.host}`);
+        initiateExpress();
+    } catch (err) {
+        console.log(err);
+        process.exit(1);
+    }
+};
 
-app.get('/', (_req, res) => {
-    res.type('html');
-    res.end(ruruHTML({endpoint: '/milad'}));
-});
-
-app.listen(4000);
-console.log('Running a GraphQL API server at http://localhost:4000/graphql');
+connectDB().then().catch(err => console.error(err))
