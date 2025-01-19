@@ -5,24 +5,80 @@ import {buildSchema} from 'graphql'
 import {ruruHTML} from 'ruru/server';
 import mongoose from "mongoose";
 import {findArticles, getArticle} from "./libs/services/article.js";
+import {findUsers, getUser} from "./libs/services/user.js";
 
 const initiateExpress = () => {
 
     const schema = buildSchema(`
     type Query {
-        articles: [Article]
-        article: Article
+        articles(page: Int, limit: Int): ArticlesResult
+        article(_id: String!): Article
+        
+        users(page: Int, limit: Int): UsersResult
+        user(_id: String!): User
+    }
+    
+    type Paginate {
+        count: Int
+        limit: Int
+        page: Int
+        pages: Int
     }
     
     type Article {
+        _id: String
         body: String
         title: String
+        user: User
+        createdAt: String
+        updatedAt: String
+    }
+    
+    type ArticlesResult {
+        result : [Article]
+        paginate: Paginate
+    }
+    
+    type User {
+        _id: String
+        name: String
+        age: Int
+        email: String
+        admin: Boolean
+        createdAt: String
+        updatedAt: String
+    }
+    
+    type UsersResult {
+        result : [User]
+        paginate: Paginate
     }
 `)
 
     const rootValue = {
-        articles: () => findArticles(),
-        article: () => getArticle("5c46c0d169720e4bc0d05cde")
+        articles: (args) => {
+            let {page, limit} = args
+            page = page || 1;
+            limit = limit || 10
+            return findArticles(page, limit)
+        },
+        article: async (args) => getArticle(args._id),
+        users: ({page, limit}) => {
+            page = page || 1;
+            limit = limit || 10
+            return findUsers(page, limit)
+        },
+        user: async ({_id}) => {
+            let user = await getUser(_id)
+            if (!user) {
+                let err = new Error()
+                err.messageCode = 1001
+                err.responseCode = 404
+                err.message = 'user not founded!!'
+                throw err
+            }
+            return user
+        }
     }
 
     const app = express();
