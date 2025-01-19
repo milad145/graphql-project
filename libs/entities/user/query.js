@@ -18,7 +18,6 @@ export default class User {
         if (options.populate)
             return model.find(query, project)
                 .sort(options.sort).limit(parseInt(options.limit)).skip(parseInt(options.skip))
-                .populate({path: 'activatorUser', select: 'username status branch'});
         else
             return model.find(query, project)
                 .sort(options.sort).limit(parseInt(options.limit)).skip(parseInt(options.skip))
@@ -36,7 +35,6 @@ export default class User {
     get(id, project, options) {
         if (options.populate)
             return model.findOne({_id: id}, project)
-                .populate({path: 'activatorUser', select: 'username branch'});
         else
             return model.findOne({_id: id}, project)
     }
