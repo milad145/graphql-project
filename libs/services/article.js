@@ -4,7 +4,7 @@ const articleDB = new Article();
 
 export const findArticles = async (page, limit) => {
     const skip = (page - 1) * limit;
-    let result = await articleDB.find({}, {}, {limit, skip, populate: true})
+    let result = await articleDB.find({}, {}, {limit, skip})
     let count = await articleDB.count({})
     return {
         result,
