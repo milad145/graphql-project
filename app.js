@@ -6,6 +6,7 @@ import {ruruHTML} from 'ruru/server';
 import mongoose from "mongoose";
 import {findArticles, getArticle} from "./libs/services/article.js";
 import {findUsers, getUser} from "./libs/services/user.js";
+import {findComments} from "./libs/services/comment.js";
 
 const initiateExpress = () => {
 
@@ -16,6 +17,8 @@ const initiateExpress = () => {
         
         users(page: Int, limit: Int): UsersResult
         user(_id: String!): User
+        
+        comments(article: String!,page: Int, limit: Int): CommentsResult
     }
     
     type Paginate {
@@ -30,6 +33,7 @@ const initiateExpress = () => {
         body: String
         title: String
         user: User
+        comments: [Comment]
         createdAt: String
         updatedAt: String
     }
@@ -47,10 +51,23 @@ const initiateExpress = () => {
         admin: Boolean
         createdAt: String
         updatedAt: String
+        articles: [Article]
     }
     
     type UsersResult {
         result : [User]
+        paginate: Paginate
+    }
+    
+    type Comment {
+        user : User
+        approved : Boolean
+        article : String
+        comment : String
+    }
+    
+    type CommentsResult {
+        result : [Comment]
         paginate: Paginate
     }
 `)
@@ -78,6 +95,11 @@ const initiateExpress = () => {
                 throw err
             }
             return user
+        },
+        comments: async ({article, page, limit}) => {
+            page = page || 1;
+            limit = limit || 10;
+            return findComments(article, page, limit)
         }
     }
 
@@ -108,5 +130,10 @@ const connectDB = async () => {
         process.exit(1);
     }
 };
-
-connectDB().then().catch(err => console.error(err))
+(async () => {
+    try {
+        await connectDB()
+    } catch (error) {
+        console.error(error)
+    }
+})()
