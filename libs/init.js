@@ -5,7 +5,7 @@ import {ruruHTML} from "ruru/server";
 import graphqlSchema from "./graphql/schema.js";
 import {rootValue} from "./graphql/rootValue.js";
 
-export const initiateExpress = () => {
+export const initiateExpress = (config) => {
 
     const app = express();
 
@@ -19,6 +19,6 @@ export const initiateExpress = () => {
         res.end(ruruHTML({endpoint: '/main'}));
     });
 
-    app.listen(4000, () => console.log("Running on port 4000"));
+    app.listen(config.port, () => console.log(`Running on http://localhost:${config.port}`));
 
 }
