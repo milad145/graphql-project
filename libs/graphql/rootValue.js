@@ -3,13 +3,12 @@ import {findUsers, getUser} from "../services/user.js";
 import {findComments} from "../services/comment.js";
 
 export const rootValue = {
-    articles: (args) => {
-        let {page, limit} = args
+    articles: ({page, limit}) => {
         page = page || 1;
         limit = limit || 10
         return findArticles(page, limit)
     },
-    article: async (args) => getArticle(args._id),
+    article: async ({_id}) => getArticle(_id),
     users: ({page, limit}) => {
         page = page || 1;
         limit = limit || 10
