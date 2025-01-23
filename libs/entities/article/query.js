@@ -33,12 +33,12 @@ export default class Article {
 
     get(id, project = {}, options = {}) {
         return this.model.findOne({_id: id}, project, options)
-            .populate({path: 'user', select: 'name age email admin createdAt updatedAt'});
+            .populate(['user', 'comments']);
     }
 
     getByQuery(query = {}, project = {}, options = {}) {
         return this.model.findOne(query, project, options)
-            .populate({path: 'user', select: 'name age email admin createdAt updatedAt'});
+            .populate(['user', 'comments']);
     }
 
     update(query = {}, update = {}, options = {}) {
