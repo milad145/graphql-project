@@ -1,56 +1,52 @@
 import mongoose from 'mongoose';
 import {schema} from './schema.js'
 
-const model = mongoose.model('article', schema)
-
 export default class Article {
+
+    constructor() {
+        this.model = mongoose.model('article', schema)
+    }
+
     create(params) {
-        const object = new model(params);
+        const object = new this.model(params);
         return object.save();
     }
 
 
-    find(query, project, options) {
+    find(query = {}, project = {}, options = {}) {
         if (typeof options !== "object") options = {};
         if (typeof options.sort === "undefined") options.sort = {'_id': -1}
         if (typeof options.limit === "undefined") options.limit = 30
         if (typeof options.skip === "undefined") options.skip = 0
-        if (options.populate)
-            return model.find(query, project)
-                .sort(options.sort).limit(parseInt(options.limit)).skip(parseInt(options.skip))
-                .populate({path: 'user', select: 'name age email admin'});
-        else
-            return model.find(query, project)
-                .sort(options.sort).limit(parseInt(options.limit)).skip(parseInt(options.skip))
+        return this.model.find(query, project)
+            .sort(options.sort).limit(parseInt(options.limit)).skip(parseInt(options.skip))
+            .populate(['user', 'comments']);
     }
 
-    aggregate(pipline) {
-        !_.isUndefined(pipline) ? true : pipline = [];
-        return model.aggregate(pipline)
+    aggregate(pipeline = []) {
+        return this.model.aggregate(pipeline)
     }
 
     count(query) {
-        return model.countDocuments(query)
+        return this.model.countDocuments(query)
     }
 
-    get(id, project, options) {
-        if (options.populate)
-            return model.findOne({_id: id}, project)
-                .populate({path: 'user', select: 'name age email admin'});
-        else
-            return model.findOne({_id: id}, project)
+    get(id, project = {}, options = {}) {
+        return this.model.findOne({_id: id}, project, options)
+            .populate({path: 'user', select: 'name age email admin createdAt updatedAt'});
     }
 
-    getByQuery(query, project, options) {
-        return model.findOne(query, project)
+    getByQuery(query = {}, project = {}, options = {}) {
+        return this.model.findOne(query, project, options)
+            .populate({path: 'user', select: 'name age email admin createdAt updatedAt'});
     }
 
-    update(query, update, options) {
+    update(query = {}, update = {}, options = {}) {
         update.modifiedAt = new Date();
         if (options.multi) {
-            return model.updateMany(query, update, options)
+            return this.model.updateMany(query, update, options)
         } else {
-            return model.findOneAndUpdate(query, update, options)
+            return this.model.findOneAndUpdate(query, update, options)
         }
     }
 }
