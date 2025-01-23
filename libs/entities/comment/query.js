@@ -1,11 +1,13 @@
 import mongoose from 'mongoose';
 import {schema} from './schema.js'
 
-const model = mongoose.model('comment', schema)
-
 export default class Comment {
+    constructor() {
+        this.model = mongoose.model('comment', schema)
+    }
+
     create(params) {
-        const object = new model(params);
+        const object = new this.model(params);
         return object.save();
     }
 
@@ -15,44 +17,36 @@ export default class Comment {
         if (typeof options.sort === "undefined") options.sort = {'_id': -1}
         if (typeof options.limit === "undefined") options.limit = 30
         if (typeof options.skip === "undefined") options.skip = 0
-        if (options.populate)
-            return model.find(query, project)
-                .sort(options.sort).limit(parseInt(options.limit)).skip(parseInt(options.skip))
-                .populate({path: 'user', select: 'name email admin'})
-                .populate({path: 'article', select: 'user title'});
-        else
-            return model.find(query, project)
-                .sort(options.sort).limit(parseInt(options.limit)).skip(parseInt(options.skip))
+        return this.model.find(query, project)
+            .sort(options.sort).limit(parseInt(options.limit)).skip(parseInt(options.skip))
+            .populate('user').populate('article');
     }
 
     aggregate(pipline) {
         !_.isUndefined(pipline) ? true : pipline = [];
-        return model.aggregate(pipline)
+        return this.model.aggregate(pipline)
     }
 
     count(query) {
-        return model.countDocuments(query)
+        return this.model.countDocuments(query)
     }
 
-    get(id, project, options) {
-        if (options.populate)
-            return model.findOne({_id: id}, project)
-                .populate({path: 'user', select: 'name email admin'})
-                .populate({path: 'article', select: 'user title'});
-        else
-            return model.findOne({_id: id}, project)
+    get(id, project, options = {}) {
+        return this.model.findOne({_id: id}, project, options)
+            .populate('user').populate('article');
     }
 
-    getByQuery(query, project, options) {
-        return model.findOne(query, project)
+    getByQuery(query = {}, project = {}, options = {}) {
+        return this.model.findOne(query, project, options)
+            .populate('user').populate('article');
     }
 
-    update(query, update, options) {
+    update(query = {}, update = {}, options = {}) {
         update.modifiedAt = new Date();
         if (options.multi) {
-            return model.updateMany(query, update, options)
+            return this.model.updateMany(query, update, options)
         } else {
-            return model.findOneAndUpdate(query, update, options)
+            return this.model.findOneAndUpdate(query, update, options)
         }
     }
 }
