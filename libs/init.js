@@ -1,24 +1,35 @@
+import http from 'http';
+
 import express from "express";
-import {createHandler} from "graphql-http/lib/use/express";
-import {ruruHTML} from "ruru/server";
+import {ApolloServer} from "@apollo/server";
+import {expressMiddleware} from '@apollo/server/express4';
+import { ApolloServerPluginLandingPageGraphQLPlayground } from '@apollo/server-plugin-landing-page-graphql-playground';
 
-import graphqlSchema from "./graphql/schema.js";
-import {rootValue} from "./graphql/rootValue.js";
 
-export const initiateExpress = (config) => {
+import {typeDefs, resolvers} from "./graphql/index.js";
+
+export const initiateExpress = async (config) => {
 
     const app = express();
 
-    app.all("/main", createHandler({
-        schema: graphqlSchema,
-        rootValue
-    }))
+    app.use(express.json());
 
-    app.get('/', (_req, res) => {
-        res.type('html');
-        res.end(ruruHTML({endpoint: '/main'}));
+    const httpServer = http.createServer({}, app);
+
+    const server = new ApolloServer({
+        typeDefs,
+        resolvers,
+        plugins: [
+            ApolloServerPluginLandingPageGraphQLPlayground()
+        ]
     });
+    await server.start();
 
-    app.listen(config.port, () => console.log(`Running on http://localhost:${config.port}`));
+    app.use(
+        expressMiddleware(server),
+    );
+
+    httpServer.listen(config.port)
+    console.log(`🚀 Server ready at http://localhost:${config.port}`);
 
 }

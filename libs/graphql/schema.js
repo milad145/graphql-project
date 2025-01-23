@@ -1,64 +1,58 @@
-import {buildSchema} from 'graphql'
+export const typeDefs = `#graphql
+type Query {
+    article(_id: String!): Article
+    articles(page: Int, limit: Int): ArticlesResult
+    user(_id: String!): User
+    users(page: Int, limit: Int): UsersResult
+    comment(_id: String): Comment
+}
 
+type ArticlesResult {
+    articles: [Article]
+    paginate: Paginate
+}
 
-export default buildSchema(`
-    type Query {
-        articles(page: Int, limit: Int): ArticlesResult
-        article(_id: String!): Article
-        
-        users(page: Int, limit: Int): UsersResult
-        user(_id: String!): User
-        
-        comments(article: String!,page: Int, limit: Int): CommentsResult
-    }
-    
-    type Paginate {
-        count: Int
-        limit: Int
-        page: Int
-        pages: Int
-    }
-    
-    type Article {
-        _id: String
-        body: String
-        title: String
-        user: User
-        comments: [Comment]
-        createdAt: String
-        updatedAt: String
-    }
-    
-    type ArticlesResult {
-        result : [Article]
-        paginate: Paginate
-    }
-    
-    type User {
-        _id: String
-        name: String
-        age: Int
-        email: String
-        admin: Boolean
-        createdAt: String
-        updatedAt: String
-        articles: [Article]
-    }
-    
-    type UsersResult {
-        result : [User]
-        paginate: Paginate
-    }
-    
-    type Comment {
-        user : User
-        approved : Boolean
-        article : String
-        comment : String
-    }
-    
-    type CommentsResult {
-        result : [Comment]
-        paginate: Paginate
-    }
-`)
+type UsersResult {
+    users: [User]
+    paginate: Paginate
+}
+
+type Paginate {
+    count: Int
+    limit: Int
+    page: Int
+    pages: Int
+}
+
+type User {
+    _id: String
+    name: String
+    age: Int
+    address: String
+    admin: Boolean
+    email: String
+    articles: [Article]
+    password: String
+    createdAt: String
+    updatedAt: String
+}
+
+type Article {
+    _id: String
+    user: User
+    title: String
+    body: String
+    comments: [Comment]
+    createdAt: String
+    updatedAt: String
+}
+
+type Comment {
+    _id: String
+    user: User
+    approved: Boolean
+    article: Article
+    comment: String
+}
+`;
+

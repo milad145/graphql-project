@@ -19,7 +19,6 @@ export default class Comment {
         if (typeof options.skip === "undefined") options.skip = 0
         return this.model.find(query, project)
             .sort(options.sort).limit(parseInt(options.limit)).skip(parseInt(options.skip))
-            .populate('user').populate('article');
     }
 
     aggregate(pipline) {
@@ -33,12 +32,10 @@ export default class Comment {
 
     get(id, project, options = {}) {
         return this.model.findOne({_id: id}, project, options)
-            .populate('user').populate('article');
     }
 
     getByQuery(query = {}, project = {}, options = {}) {
         return this.model.findOne(query, project, options)
-            .populate('user').populate('article');
     }
 
     update(query = {}, update = {}, options = {}) {
