@@ -3,60 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <title>GraphQL</title>
+
+    <script type="text/javascript" src="/js/script.js"></script>
 </head>
 <body>
-<script>
-    let body = {
-        query: `
-        fragment userFields on User {
-          _id
-          name
-          email
-          admin
-          age
-        }
-        query GetUser($userA: String!, $userB: String!) {
-            firstUser: user(_id: $userA) {
-            ...userFields
-            articles {
-              _id
-              title
-              comments {
-                  _id
-                  comment
-                  user{
-                    ...userFields
-                  }
-                }
-            }
-            comments {
-              _id
-              comment
-              article {
-                _id
-                title
-              }
-            }
-        }
-          secondUser: user(_id: $userB) {
-            ...userFields
-          }
-        }
-        `,
-        variables: {
-            "userA": "5c46c0d169720e4bc0d05cdb",
-            "userB": "5c46c0d169720e4bc0d05cda"
-        }
-    }
-    fetch("http://localhost:3000/", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(body)
-    })
-        .then(res => res.json())
-        .then(res => console.log(res))
-</script>
 </body>
 </html>

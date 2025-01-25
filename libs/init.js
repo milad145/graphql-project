@@ -1,4 +1,7 @@
 import http from 'http';
+import path from 'path';
+
+const __dirname = import.meta.dirname;
 
 import express from "express";
 import {ApolloServer} from "@apollo/server";
@@ -27,6 +30,7 @@ export const initiateExpress = async (config) => {
     });
     await server.start();
 
+    app.use('/js', express.static(path.join(__dirname, '..', 'views', 'assets', 'js')));
     app.get('/viewer', (req, res) => res.render('index'))
 
     app.use(
