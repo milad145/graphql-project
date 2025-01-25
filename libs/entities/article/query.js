@@ -39,11 +39,14 @@ export default class Article {
     }
 
     update(query = {}, update = {}, options = {}) {
-        update.modifiedAt = new Date();
         if (options.multi) {
             return this.model.updateMany(query, update, options)
         } else {
             return this.model.findOneAndUpdate(query, update, options)
         }
+    }
+
+    delete(_id) {
+        return this.model.deleteOne({_id})
     }
 }
