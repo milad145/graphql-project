@@ -19,3 +19,45 @@ export const getUserArticles = async (user) => {
 export const getArticle = async (_id) => {
     return articleDB.get(_id, {}, {})
 }
+
+/**
+ * add new article to database
+ * @param user {!String}
+ * @param title {!String}
+ * @param body {!String}
+ * @returns {Promise<*>}
+ */
+export const addArticle = async (user, title, body) => {
+    return articleDB.create({user, title, body})
+}
+
+/**
+ * /**
+ * update article by _id
+ * @param _id {!String}
+ * @param title {String}
+ * @param body {String}
+ * @returns {Promise<*>}
+ */
+export const updateArticle = (_id, title, body) => {
+    let update = {}
+    if (title)
+        update.title = title;
+    if (body)
+        update.body = body;
+
+    if (Object.keys(update).length)
+        update = {$set: update}
+
+    return articleDB.update({_id}, update, {new: true});
+}
+
+/**
+ * delete article by id
+ * @param _id {!String}
+ * @returns {*}
+ */
+export const deleteArticle = async (_id) => {
+    let {deletedCount} = await articleDB.delete(_id)
+    return !!deletedCount;
+}
