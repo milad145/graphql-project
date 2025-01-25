@@ -20,8 +20,9 @@ type UsersResult {
 type Paginate {
     count: Int
     limit: Int
-    page: Int
+    page: Int @deprecated(reason: "use skip")
     pages: Int
+    skip: Int
 }
 
 type User {
