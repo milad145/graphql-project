@@ -1,6 +1,6 @@
 import {findArticles, getArticle, getUserArticles} from "../services/article.js";
 import {findUsers, getUser} from "../services/user.js";
-import {getArticleComments, getComment} from "../services/comment.js";
+import {getArticleComments, getComment, getUserComments} from "../services/comment.js";
 
 export const resolvers = {
     Query: {
@@ -19,7 +19,8 @@ export const resolvers = {
         comment: async (_, {_id}) => await getComment(_id)
     },
     User: {
-        articles: async ({_id}) => await getUserArticles(_id)
+        articles: async ({_id}) => await getUserArticles(_id),
+        comments: async ({_id}) => await getUserComments(_id)
     },
     Article: {
         user: async ({user}) => await getUser(user),
