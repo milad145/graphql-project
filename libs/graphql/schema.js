@@ -7,6 +7,12 @@ type Query {
     comment(_id: String): Comment
 }
 
+type Mutation{
+    addArticle(title: String!, body: String!): Article
+    updateArticle(_id: String!, title: String, body: String): Article
+    deleteArticle(_id: String!): Boolean
+}
+
 type ArticlesResult {
     articles: [Article]
     paginate: Paginate
