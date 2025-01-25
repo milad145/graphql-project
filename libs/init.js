@@ -3,7 +3,7 @@ import http from 'http';
 import express from "express";
 import {ApolloServer} from "@apollo/server";
 import {expressMiddleware} from '@apollo/server/express4';
-import { ApolloServerPluginLandingPageGraphQLPlayground } from '@apollo/server-plugin-landing-page-graphql-playground';
+import {ApolloServerPluginLandingPageGraphQLPlayground} from '@apollo/server-plugin-landing-page-graphql-playground';
 
 
 import {typeDefs, resolvers} from "./graphql/index.js";
@@ -11,6 +11,8 @@ import {typeDefs, resolvers} from "./graphql/index.js";
 export const initiateExpress = async (config) => {
 
     const app = express();
+    app.set('view engine', 'ejs');
+
 
     app.use(express.json());
 
@@ -25,8 +27,10 @@ export const initiateExpress = async (config) => {
     });
     await server.start();
 
+    app.get('/viewer', (req, res) => res.render('index'))
+
     app.use(
-        expressMiddleware(server),
+        expressMiddleware(server)
     );
 
     httpServer.listen(config.port)
