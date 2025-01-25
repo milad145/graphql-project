@@ -31,6 +31,7 @@ type User {
     address: String
     admin: Boolean
     email: String
+    comments: [Comment]
     articles: [Article]
     password: String
     createdAt: String
