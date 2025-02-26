@@ -1,10 +1,7 @@
-import mongoose from 'mongoose';
-import {schema} from './schema.js'
+export default class QueryModel {
 
-export default class Article {
-
-    constructor() {
-        this.model = mongoose.model('article', schema)
+    constructor(model) {
+        this.model = model
     }
 
     create(params) {
@@ -12,14 +9,11 @@ export default class Article {
         return object.save();
     }
 
-
-    find(query = {}, project = {}, options = {}) {
-        if (typeof options !== "object") options = {};
+    find(query = {}, project = {}, options = {},) {
         if (typeof options.sort === "undefined") options.sort = {'_id': -1}
         if (typeof options.limit === "undefined") options.limit = 30
         if (typeof options.skip === "undefined") options.skip = 0
-        return this.model.find(query, project)
-            .sort(options.sort).limit(parseInt(options.limit)).skip(parseInt(options.skip))
+        return this.model.find(query, project, options).sort(options.sort)
     }
 
     aggregate(pipeline = []) {
@@ -30,8 +24,8 @@ export default class Article {
         return this.model.countDocuments(query)
     }
 
-    get(id, project = {}, options = {}) {
-        return this.model.findOne({_id: id}, project, options)
+    get(_id, project = {}) {
+        return this.model.findById(_id, project, {})
     }
 
     getByQuery(query = {}, project = {}, options = {}) {
@@ -40,9 +34,9 @@ export default class Article {
 
     update(query = {}, update = {}, options = {}) {
         if (options.multi) {
-            return this.model.updateMany(query, update, options)
+            return this.model.updateMany(query, update, options).set('updatedAt', new Date())
         } else {
-            return this.model.findOneAndUpdate(query, update, options)
+            return this.model.findOneAndUpdate(query, update, options).set('updatedAt', new Date())
         }
     }
 

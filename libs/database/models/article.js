@@ -1,10 +1,11 @@
-import {Schema} from 'mongoose';
+import mongoose, {Schema} from 'mongoose';
 
+const modelName = 'article';
 const schema = new Schema({
     user: {type: Schema.Types.ObjectId, ref: 'user'},
     title: {type: String, required: true},
     body: {type: String, required: true}
-}, {timestamps: true, collection: "article", toJSON: {virtuals: true}})
+}, {timestamps: true, collection: modelName, toJSON: {virtuals: true}})
 
 schema.virtual("comments", {
     ref: "comment",
@@ -12,4 +13,4 @@ schema.virtual("comments", {
     foreignField: "article"
 })
 
-export {schema};
+export default mongoose.model(modelName, schema)
