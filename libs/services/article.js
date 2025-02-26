@@ -1,11 +1,9 @@
-import Article from '../entities/article/query.js'
-
-const articleDB = new Article();
+import {articleModel} from "../database/index.js";
 
 export const findArticles = async (query = {}, page, limit) => {
     const skip = (page - 1) * limit;
-    let articles = await articleDB.find(query, {}, {limit, skip})
-    let count = await articleDB.count(query)
+    let articles = await articleModel.find(query, {}, {limit, skip})
+    let count = await articleModel.count(query)
     return {
         articles,
         paginate: {count, limit, page, pages: Math.ceil(count / limit)}
@@ -13,11 +11,11 @@ export const findArticles = async (query = {}, page, limit) => {
 }
 
 export const getUserArticles = async (user) => {
-    return await articleDB.find({user}, {}, {skip: 0, limit: 3})
+    return await articleModel.find({user}, {}, {skip: 0, limit: 3})
 }
 
 export const getArticle = async (_id) => {
-    return articleDB.get(_id, {}, {})
+    return articleModel.get(_id, {}, {})
 }
 
 /**
@@ -28,7 +26,7 @@ export const getArticle = async (_id) => {
  * @returns {Promise<*>}
  */
 export const addArticle = async (user, title, body) => {
-    return articleDB.create({user, title, body})
+    return articleModel.create({user, title, body})
 }
 
 /**
@@ -49,7 +47,7 @@ export const updateArticle = (_id, title, body) => {
     if (Object.keys(update).length)
         update = {$set: update}
 
-    return articleDB.update({_id}, update, {new: true});
+    return articleModel.update({_id}, update, {new: true});
 }
 
 /**
@@ -58,6 +56,6 @@ export const updateArticle = (_id, title, body) => {
  * @returns {*}
  */
 export const deleteArticle = async (_id) => {
-    let {deletedCount} = await articleDB.delete(_id)
+    let {deletedCount} = await articleModel.delete(_id)
     return !!deletedCount;
 }
