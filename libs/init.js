@@ -1,7 +1,10 @@
 import http from 'http';
-import path from 'path';
+import path, {dirname} from 'path';
+import {fileURLToPath} from 'url';
 
-const __dirname = import.meta.dirname;
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
 
 import express from "express";
 import {ApolloServer} from "@apollo/server";
