@@ -16,21 +16,17 @@ libs/
 ---- ---- development.js
 ---- ---- index.js
 ---- ---- production.js
----- data/
----- ---- graphql/
+---- database/
+---- ---- models/
+---- ---- ---- article.js
+---- ---- ---- comment.js
+---- ---- ---- user.js
+---- ---- sampleData/
 ---- ---- ---- article.metadata.json
 ---- ---- ---- comment.metadata.json
 ---- ---- ---- user.metadata.json
----- entities/
----- ---- article/
----- ---- ---- query.js
----- ---- ---- schema.js
----- ---- comment/
----- ---- ---- query.js
----- ---- ---- schema.js
----- ---- user/
----- ---- ---- query.js
----- ---- ---- schema.js
+---- ---- index.js
+---- ---- query.js
 ---- graphql/
 ---- ---- index.js
 ---- ---- resolver.js
@@ -40,6 +36,11 @@ libs/
 ---- ---- comment.js
 ---- ---- user.js
 ---- init.js
+views/
+---- assets/
+---- ---- js/
+---- ---- ---- script.js
+---- index.ejs
 .gitignore
 app.js
 package.json
