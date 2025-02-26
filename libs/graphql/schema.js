@@ -61,6 +61,7 @@ type Comment {
     approved: Boolean
     article: Article
     comment: String
+    createdAt: String
 }
 `;
 

@@ -19,10 +19,12 @@ const userFragment = `
               comments{
                 _id
                 comment
+                createdAt
               }
               articles{
                 _id
                 title
+                createdAt
               }
             }
 `
@@ -30,6 +32,7 @@ const commentFragment=`
             fragment commentFields on Comment{
               _id
               comment
+              createdAt
               user{
                 ...userFields
               }
