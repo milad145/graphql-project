@@ -10,7 +10,7 @@ const connectDB = async () => {
 
         console.log(`MongoDB Connected: ${conn.connection.host}`);
 
-        initiateExpress(config)
+        await initiateExpress(config)
     } catch (err) {
         console.log(err);
         process.exit(1);
