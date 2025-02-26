@@ -9,6 +9,50 @@ function request(body) {
         .then(res => res.json())
 }
 
+const userFragment = `
+            fragment userFields on User{
+              _id
+              name
+              email
+              age
+              address
+              comments{
+                _id
+                comment
+              }
+              articles{
+                _id
+                title
+              }
+            }
+`
+const commentFragment=`
+            fragment commentFields on Comment{
+              _id
+              comment
+              user{
+                ...userFields
+              }
+            }
+`
+
+const articleFragment=`
+            fragment newArticleFields on Article{
+              _id
+              title
+              body
+              createdAt
+              updatedAt
+              user{
+                ...userFields
+              }
+              comments{
+                ...commentFields
+              }
+              
+            }
+`
+
 async function getUsers() {
     try {
         let body = {
@@ -64,27 +108,15 @@ async function addArticle() {
     try {
         let body = {
             query: `
-        mutation publishArticle($title: String!,$body: String!){
-          addArticle(title:$title, body: $body){
-            _id
-            title
-            body
-            createdAt
-            updatedAt
-            user{
-              _id
-              name
-            }
-            comments{
-              _id
-              comment
-              user{
-                _id
-                name
+            ${userFragment}
+            ${commentFragment}
+            ${articleFragment}
+            mutation publishArticle($title: String!,$body: String!){
+              addArticle(title:$title, body: $body){
+                ...newArticleFields
               }
             }
-          }
-        }
+     
         `,
             variables: {
                 "title": "test title",
@@ -92,12 +124,7 @@ async function addArticle() {
             }
         }
         const {data} = await request(body);
-        const article = data.addArticle
-        console.log(article)
-        await updateArticle(article._id)
-        console.log('article updated!')
-        await deleteArticle(article._id)
-        console.log('article deleted!')
+        return data.addArticle
     } catch (e) {
         console.error(e)
     }
@@ -107,13 +134,12 @@ async function updateArticle(_id) {
     try {
         let body = {
             query: `
+            ${userFragment}
+            ${commentFragment}
+            ${articleFragment}
                 mutation updateArticle($_id: String!, $title: String, $body: String){
                   updateArticle(_id:$_id, title:$title, body:$body){
-                    _id
-                    title
-                    body
-                    createdAt
-                    updatedAt
+                    ...newArticleFields
                   }
                 }
         `,
@@ -124,7 +150,7 @@ async function updateArticle(_id) {
             }
         }
         const {data} = await request(body);
-        console.log(data)
+        return data.updateArticle;
     } catch (e) {
         console.error(e)
     }
@@ -145,10 +171,17 @@ async function deleteArticle(_id) {
             }
         }
         const {data} = await request(body);
-        console.log(data)
+        return data.deleteArticle
     } catch (e) {
         console.error(e)
     }
 }
 
-(async () => await addArticle())()
+(async () => {
+    let article = await addArticle()
+    console.log({article})
+    let updatedArticle = await updateArticle(article._id)
+    console.log({updatedArticle})
+    let deletedArticle = await deleteArticle(article._id)
+    console.log({deletedArticle})
+})()
