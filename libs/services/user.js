@@ -1,4 +1,6 @@
 import {userModel} from "../database/index.js";
+import {generateJWTToken} from "../modules/assist.js"
+import {errorCode} from "../modules/errorHandler.js";
 
 export const findUsers = async (page, limit) => {
     const skip = (page - 1) * limit;
@@ -12,4 +14,27 @@ export const findUsers = async (page, limit) => {
 
 export const getUser = async (_id) => {
     return userModel.get(_id, {}, {})
+}
+
+export const register = async (name, age, address, email, password) => {
+    const userObj = {name, age, address, email, password}
+    const user = await userModel.create(userObj);
+    const accessToken = generateJWTToken('access', {_id: user['_id']});
+    const refreshToken = generateJWTToken('refresh', {_id: user['_id']});
+    return {accessToken, refreshToken};
+}
+
+export const login = async (email, password) => {
+    const user = await userModel.getByQuery({email}, {password: 1})
+
+    if (!user)
+        throw errorCode(2002)
+
+    let passwordIsMatch = await user.comparePassword(password)
+    if(!passwordIsMatch)
+        throw errorCode(2003)
+
+    const accessToken = generateJWTToken('access', {_id: user['_id']});
+    const refreshToken = generateJWTToken('refresh', {_id: user['_id']});
+    return {accessToken, refreshToken};
 }
