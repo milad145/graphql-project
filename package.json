@@ -12,9 +12,11 @@
   "dependencies": {
     "@apollo/server": "^4.11.3",
     "@apollo/server-plugin-landing-page-graphql-playground": "^4.0.1",
+    "bcryptjs": "^3.0.2",
     "dotenv": "^16.4.7",
     "ejs": "^3.1.10",
     "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.9.5"
   },
   "devDependencies": {
