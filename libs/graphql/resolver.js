@@ -6,7 +6,7 @@ import {
     updateArticle,
     deleteArticle
 } from "../services/article.js";
-import {findUsers, getUser} from "../services/user.js";
+import {findUsers, getUser, register, login} from "../services/user.js";
 import {getArticleComments, getComment, getUserComments} from "../services/comment.js";
 
 export const resolvers = {
@@ -31,13 +31,15 @@ export const resolvers = {
             return await addArticle(user, title, body)
         },
         updateArticle: async (_, {_id, title, body}) => {
-            let article = await updateArticle(_id, title, body)
-            if (!article)
-                throw new Error('article not found!')
-
-            return article
+            return await updateArticle(_id, title, body)
         },
-        deleteArticle: async (_, {_id}) => await deleteArticle(_id)
+        deleteArticle: async (_, {_id}) => await deleteArticle(_id),
+        register: async (_, {name, age, address, email, password}) => {
+            return await register(name, age, address, email, password)
+        },
+        login: async (_, {email, password}) => {
+            return await login(email, password)
+        }
     },
     User: {
         articles: async ({_id}) => await getUserArticles(_id),
@@ -49,6 +51,6 @@ export const resolvers = {
     },
     Comment: {
         user: async ({user}) => await getUser(user),
-        article: async ({article}) => await getArticle(article),
-    },
+        article: async ({article}) => await getArticle(article)
+    }
 }
