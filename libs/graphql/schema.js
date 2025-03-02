@@ -11,6 +11,19 @@ type Mutation{
     addArticle(title: String!, body: String!): Article
     updateArticle(_id: String!, title: String, body: String): Article
     deleteArticle(_id: String!): Boolean
+    register(
+        name:String!,
+        age:Int!,
+        address:String!,
+        email:String!,
+        password:String!
+    ): Token
+    login(email:String!, password:String!): Token
+}
+
+type Token {
+    accessToken: String!
+    refreshToken: String!
 }
 
 type ArticlesResult {
