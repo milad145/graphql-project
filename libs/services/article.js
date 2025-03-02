@@ -1,4 +1,5 @@
 import {articleModel} from "../database/index.js";
+import {errorCode} from "../modules/errorHandler.js";
 
 export const findArticles = async (query = {}, page, limit) => {
     const skip = (page - 1) * limit;
@@ -37,7 +38,7 @@ export const addArticle = async (user, title, body) => {
  * @param body {String}
  * @returns {Promise<*>}
  */
-export const updateArticle = (_id, title, body) => {
+export const updateArticle = async (_id, title, body) => {
     let update = {}
     if (title)
         update.title = title;
@@ -47,7 +48,11 @@ export const updateArticle = (_id, title, body) => {
     if (Object.keys(update).length)
         update = {$set: update}
 
-    return articleModel.update({_id}, update, {new: true});
+    const article = await articleModel.update({_id}, update, {new: true});
+    if(!article)
+        throw errorCode(2101)
+
+    return article
 }
 
 /**
