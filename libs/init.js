@@ -18,6 +18,7 @@ export const initiateExpress = async (config) => {
 
     const app = express();
     app.set('view engine', 'ejs');
+    app.set('trust proxy', 1)
 
 
     app.use(express.json());
