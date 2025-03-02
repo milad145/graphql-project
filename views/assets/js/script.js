@@ -28,7 +28,7 @@ const userFragment = `
               }
             }
 `
-const commentFragment=`
+const commentFragment = `
             fragment commentFields on Comment{
               _id
               comment
@@ -39,7 +39,7 @@ const commentFragment=`
             }
 `
 
-const articleFragment=`
+const articleFragment = `
             fragment newArticleFields on Article{
               _id
               title
@@ -180,11 +180,79 @@ async function deleteArticle(_id) {
     }
 }
 
+async function registerUser(name, age, address, email, password) {
+    try {
+        let body = {
+            query: `
+            mutation register($name: String!, $age: Int!, $address: String!, $email:String!, $password: String!){
+                register(name:$name, age: $age, address: $address, email: $email, password: $password){
+                    accessToken
+                    refreshToken
+                }
+            }
+     
+        `,
+            variables: {name, age, address, email, password}
+        }
+        const {data, errors} = await request(body);
+        if (errors)
+            throw errors
+
+        return data.register
+    } catch (e) {
+        console.error(e)
+    }
+}
+
+async function login(email, password) {
+    try {
+        let body = {
+            query: `
+            
+                mutation login($email:String!, $password: String!){
+                    login(email: $email, password: $password){
+                        accessToken
+                        refreshToken
+                    }
+                }
+     
+        `,
+            variables: {email, password}
+        }
+        const {data, errors} = await request(body);
+        if (errors)
+            throw errors
+
+        return data.login
+    } catch (e) {
+        console.error(e)
+    }
+}
+
 (async () => {
-    let article = await addArticle()
-    console.log({article})
-    let updatedArticle = await updateArticle(article._id)
-    console.log({updatedArticle})
-    let deletedArticle = await deleteArticle(article._id)
-    console.log({deletedArticle})
+    // let article = await addArticle()
+    // console.log({article})
+    // let updatedArticle = await updateArticle(article._id)
+    // console.log({updatedArticle})
+    // let deletedArticle = await deleteArticle(article._id)
+    // console.log({deletedArticle})
+
+    const userData = {
+        name: "mehran",
+        age: 31,
+        address: "Ardabil, Iran",
+        email: "mehran@gmail.com",
+        password: "ldghn145"
+    }
+    const {name, age, address, email, password} = userData;
+    let user = await registerUser(name, age, address, email, password)
+    console.log(user)
+    let loginData
+    try {
+        await login(email, "test")
+    } catch (e) {
+        console.error(e)
+    }
+    loginData = await login(email, password)
+    console.log(loginData)
 })()
