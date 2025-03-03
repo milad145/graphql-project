@@ -12,7 +12,7 @@ import {expressMiddleware} from '@apollo/server/express4';
 import {ApolloServerPluginLandingPageGraphQLPlayground} from '@apollo/server-plugin-landing-page-graphql-playground';
 
 
-import {typeDefs, resolvers} from "./graphql/index.js";
+import {typeDefs, resolvers, context} from "./graphql/index.js";
 
 export const initiateExpress = async (config) => {
 
@@ -38,7 +38,7 @@ export const initiateExpress = async (config) => {
     app.get('/viewer', (req, res) => res.render('index'))
 
     app.use(
-        expressMiddleware(server)
+        expressMiddleware(server, {context})
     );
 
     httpServer.listen(config.port)
