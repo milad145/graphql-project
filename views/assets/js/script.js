@@ -1,12 +1,22 @@
+let accessToken = null
+let refreshToken = null;
+
 function request(body) {
     return fetch("http://localhost:3000/", {
         method: "POST",
         headers: {
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${accessToken}`
         },
         body: JSON.stringify(body)
     })
         .then(res => res.json())
+        .then(result => {
+            const {data, errors} = result;
+            if (errors)
+                throw errors
+            return result;
+        })
 }
 
 const userFragment = `
@@ -28,6 +38,7 @@ const userFragment = `
               }
             }
 `
+
 const commentFragment = `
             fragment commentFields on Comment{
               _id
@@ -107,7 +118,7 @@ async function getUsers() {
     }
 }
 
-async function addArticle() {
+async function addArticle(accessToken) {
     try {
         let body = {
             query: `
@@ -194,9 +205,7 @@ async function registerUser(name, age, address, email, password) {
         `,
             variables: {name, age, address, email, password}
         }
-        const {data, errors} = await request(body);
-        if (errors)
-            throw errors
+        const {data} = await request(body);
 
         return data.register
     } catch (e) {
@@ -219,9 +228,7 @@ async function login(email, password) {
         `,
             variables: {email, password}
         }
-        const {data, errors} = await request(body);
-        if (errors)
-            throw errors
+        const {data} = await request(body);
 
         return data.login
     } catch (e) {
@@ -230,29 +237,20 @@ async function login(email, password) {
 }
 
 (async () => {
-    // let article = await addArticle()
-    // console.log({article})
-    // let updatedArticle = await updateArticle(article._id)
-    // console.log({updatedArticle})
-    // let deletedArticle = await deleteArticle(article._id)
-    // console.log({deletedArticle})
 
-    const userData = {
-        name: "mehran",
-        age: 31,
-        address: "Ardabil, Iran",
-        email: "mehran@gmail.com",
-        password: "ldghn145"
+    const email = "miladaslani1991@gmail.com"
+    const password = "ldghn1450719910"
+    const user = await login(email, password)
+    accessToken = user.accessToken;
+    refreshToken = user.refreshToken
+
+    let article = await addArticle()
+    console.log({article})
+
+    if (article) {
+        let updatedArticle = await updateArticle(article._id)
+        console.log({updatedArticle})
+        let deletedArticle = await deleteArticle(article._id)
+        console.log({deletedArticle})
     }
-    const {name, age, address, email, password} = userData;
-    let user = await registerUser(name, age, address, email, password)
-    console.log(user)
-    let loginData
-    try {
-        await login(email, "test")
-    } catch (e) {
-        console.error(e)
-    }
-    loginData = await login(email, password)
-    console.log(loginData)
 })()
