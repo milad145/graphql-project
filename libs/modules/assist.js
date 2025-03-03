@@ -11,3 +11,13 @@ export const generateJWTToken = (type, data) => {
     } else
         return ''
 }
+
+export const validateJWTToken = async (type, token) => {
+    try {
+        let secret = config[`${type}TokenSecret`];
+        const {data} = await jwt.verify(token, secret);
+        return data;
+    } catch (e) {
+        throw e
+    }
+}
