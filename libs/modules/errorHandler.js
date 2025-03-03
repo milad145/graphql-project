@@ -12,7 +12,8 @@ export const errorCode = (code) => {
     error[2001] = {message: "You are registered already!", code: 409};
     error[2002] = {message: "َUser not registered yet!", code: 404};
     error[2003] = {message: "Wrong username or password.", code: 403};
-    // user > 2000
+
+    // article > 2100
     error[2101] = {message: "Article not found!", code: 404};
 
     let response = error[code] || {};
